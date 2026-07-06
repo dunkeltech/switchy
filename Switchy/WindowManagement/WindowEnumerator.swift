@@ -21,6 +21,8 @@ struct EnumerationOptions {
     /// Include windows from other Spaces (virtual desktops). Such windows count as
     /// "off screen" and are otherwise filtered out.
     var includeOtherSpaces: Bool = false
+    /// Bundle identifiers whose windows are excluded entirely (e.g. "com.apple.Stickies").
+    var excludedBundleIDs: Set<String> = []
 }
 
 /// Builds the combined window list from ScreenCaptureKit (visible windows incl.
@@ -51,6 +53,8 @@ final class WindowEnumerator {
                 else { return false }
                 // Windows on other Spaces are "off screen" – only include when requested.
                 if !options.includeOtherSpaces, !window.isOnScreen { return false }
+                if let bundleID = window.owningApplication?.bundleIdentifier,
+                   options.excludedBundleIDs.contains(bundleID) { return false }
                 if let filterPID = options.filterToPID, pid != filterPID { return false }
                 if let rect = options.restrictToCGFrame {
                     let center = CGPoint(x: window.frame.midX, y: window.frame.midY)
@@ -63,7 +67,7 @@ final class WindowEnumerator {
         }
 
         // 2) Build the AX window index per running app (titles + minimized windows).
-        let axIndex = buildAXIndex(excludingPID: ownPID)
+        let axIndex = buildAXIndex(excludingPID: ownPID, excludedBundleIDs: options.excludedBundleIDs)
 
         var results: [WindowInfo] = []
         var matchedAXWindows = Set<AXUIElementBox>()
@@ -152,11 +156,15 @@ final class WindowEnumerator {
 
     // MARK: - AX index
 
-    private func buildAXIndex(excludingPID ownPID: pid_t) -> [pid_t: AppWindows] {
+    private func buildAXIndex(
+        excludingPID ownPID: pid_t,
+        excludedBundleIDs: Set<String>
+    ) -> [pid_t: AppWindows] {
         var index: [pid_t: AppWindows] = [:]
         for app in NSWorkspace.shared.runningApplications where app.activationPolicy == .regular {
             let pid = app.processIdentifier
             guard pid != ownPID else { continue }
+            if let bundleID = app.bundleIdentifier, excludedBundleIDs.contains(bundleID) { continue }
 
             let appElement = AXUIElementCreateApplication(pid)
             AXUIElementSetMessagingTimeout(appElement, axMessagingTimeout)

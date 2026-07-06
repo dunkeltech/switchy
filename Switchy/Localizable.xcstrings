@@ -231,6 +231,66 @@
         "it" : { "stringUnit" : { "state" : "translated", "value" : "Avvia all’accesso" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录时启动" } }
       }
+    },
+    "Excluded apps" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ausgeschlossene Apps" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Apps excluidas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Apps exclues" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बहिष्कृत ऐप्स" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "App escluse" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已排除的应用" } }
+      }
+    },
+    "Windows of these apps never appear in the switcher." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster dieser Apps erscheinen nie im Umschalter." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Las ventanas de estas apps nunca aparecen en el conmutador." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les fenêtres de ces apps n’apparaissent jamais dans le sélecteur." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "इन ऐप्स की विंडो स्विचर में कभी दिखाई नहीं देतीं।" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Le finestre di queste app non compaiono mai nello switcher." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这些应用的窗口永远不会出现在切换器中。" } }
+      }
+    },
+    "No apps excluded" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Keine Apps ausgeschlossen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ninguna app excluida" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucune app exclue" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कोई ऐप बहिष्कृत नहीं" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Nessuna app esclusa" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未排除任何应用" } }
+      }
+    },
+    "Add…" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Hinzufügen…" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Añadir…" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ajouter…" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "जोड़ें…" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Aggiungi…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "添加…" } }
+      }
+    },
+    "Choose from Finder…" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aus dem Finder wählen…" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Elegir en el Finder…" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisir dans le Finder…" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Finder से चुनें…" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scegli dal Finder…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "从访达选择…" } }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entfernen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Eliminar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Supprimer" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "हटाएँ" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Rimuovi" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "移除" } }
+      }
     }
   }
 }

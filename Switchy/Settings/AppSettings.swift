@@ -24,6 +24,9 @@ final class AppSettings: ObservableObject {
     @Published var reverseKeyCode: UInt16 { didSet { defaults.set(Int(reverseKeyCode), forKey: Keys.reverseKeyCode) } }
     @Published var includeMinimized: Bool { didSet { defaults.set(includeMinimized, forKey: Keys.includeMinimized) } }
     @Published var showAllSpaces: Bool { didSet { defaults.set(showAllSpaces, forKey: Keys.showAllSpaces) } }
+    /// Bundle identifiers of apps whose windows are never shown in the switcher
+    /// (e.g. "com.apple.Stickies").
+    @Published var excludedBundleIDs: [String] { didSet { defaults.set(excludedBundleIDs, forKey: Keys.excludedBundleIDs) } }
     @Published var launchAtLogin: Bool {
         didSet {
             guard launchAtLogin != oldValue else { return }
@@ -41,6 +44,7 @@ final class AppSettings: ObservableObject {
         static let reverseKeyCode = "reverseKeyCode"
         static let includeMinimized = "includeMinimized"
         static let showAllSpaces = "showAllSpaces"
+        static let excludedBundleIDs = "excludedBundleIDs"
     }
 
     private init() {
@@ -52,6 +56,7 @@ final class AppSettings: ObservableObject {
         reverseKeyCode = UInt16(defaults.object(forKey: Keys.reverseKeyCode) as? Int ?? 56) // left ⇧
         includeMinimized = defaults.object(forKey: Keys.includeMinimized) as? Bool ?? true
         showAllSpaces = defaults.object(forKey: Keys.showAllSpaces) as? Bool ?? true
+        excludedBundleIDs = defaults.stringArray(forKey: Keys.excludedBundleIDs) ?? []
         launchAtLogin = LaunchAtLogin.isEnabled
     }
 

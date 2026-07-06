@@ -54,6 +54,7 @@ The settings window (Menu → *Settings…*) offers:
 
 * **Keyboard Shortcuts:** Shortcut recorders for the global and app-specific switchers, as well as the reverse key (supports single keys, including pure modifiers like the left `⇧`).
 * **Window Behavior:** "Include minimized windows" and "Show windows from all screens/Spaces".
+* **Excluded apps:** a list of apps (by bundle identifier) whose windows never appear in the switcher — e.g. Stickies. Add from the running apps or pick an app from Finder.
 * **Launch:** "Launch at login" (via `SMAppService`).
 
 The configuration is persisted in `UserDefaults`; hotkey changes take effect immediately. *Launch at login* works most reliably when the app is placed in a permanent location (e.g., `/Applications`).

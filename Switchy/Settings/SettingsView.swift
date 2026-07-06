@@ -40,11 +40,13 @@ struct SettingsView: View {
                 Toggle("Show windows from all displays/Spaces", isOn: $settings.showAllSpaces)
             }
 
+            ExcludedAppsSection(settings: settings)
+
             Section("Startup") {
                 Toggle("Launch at login", isOn: $settings.launchAtLogin)
             }
         }
         .formStyle(.grouped)
-        .frame(width: 480, height: 340)
+        .frame(width: 480, height: 460)
     }
 }

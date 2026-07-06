@@ -162,6 +162,7 @@ final class OverlayController: HotkeyResponder {
         let settings = AppSettings.shared
         var options = EnumerationOptions()
         options.includeMinimized = settings.includeMinimized
+        options.excludedBundleIDs = Set(settings.excludedBundleIDs)
 
         if mode == .appFilter {
             // Before the (non-activating) overlay appears, the most recently active app
