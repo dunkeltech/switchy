@@ -1,0 +1,37 @@
+# ---- macOS ----
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# ---- Build output ----
+# Release/DMG output produced by scripts/build_dmg.sh (SYMROOT) and Xcode.
+/build/
+DerivedData/
+*.dSYM
+*.dSYM.zip
+*.ipa
+
+# ---- Xcode: user-specific state (keep shared schemes under xcshareddata) ----
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.moved-aside
+*.hmap
+*.pbxuser
+!default.pbxuser
+*.perspectivev3
+!default.perspectivev3
+
+# Swift Package Manager artifacts inside the Xcode workspace
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+# ---- Swift Package Manager ----
+.build/
+.swiftpm/
+
+# ---- Misc ----
+*.log

@@ -1,0 +1,13 @@
+<svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+  <!-- Monochrome template variant for the menu bar: a filled front window (with a
+       transparent title-bar separator via an evenodd hole) in front of a back window
+       outline. All black on transparent; macOS tints it for light/dark menu bars. -->
+  <rect x="6.5" y="8" width="15" height="11.5" rx="2.5" fill="none" stroke="#000000" stroke-width="2.1"/>
+  <path fill="#000000" fill-rule="evenodd" d="
+    M16.1 15
+    H27.9 A2.6 2.6 0 0 1 30.5 17.6
+    V25.4 A2.6 2.6 0 0 1 27.9 28
+    H16.1 A2.6 2.6 0 0 1 13.5 25.4
+    V17.6 A2.6 2.6 0 0 1 16.1 15 Z
+    M13.5 19.1 H30.5 V20.6 H13.5 Z"/>
+</svg>

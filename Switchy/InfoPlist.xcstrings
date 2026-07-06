@@ -1,0 +1,17 @@
+{
+  "sourceLanguage" : "en",
+  "version" : "1.0",
+  "strings" : {
+    "NSScreenCaptureUsageDescription" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Switchy needs screen recording to show live window previews in the switcher overlay." } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Switchy benötigt Bildschirmaufnahme, um Live-Vorschauen der Fenster im Umschalt-Overlay anzuzeigen." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Switchy necesita la grabación de pantalla para mostrar vistas previas en vivo de las ventanas en el overlay de cambio." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Switchy a besoin de l’enregistrement de l’écran pour afficher des aperçus en direct des fenêtres dans l’overlay de changement." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्विचर ओवरले में विंडो के लाइव पूर्वावलोकन दिखाने के लिए Switchy को स्क्रीन रिकॉर्डिंग की आवश्यकता है।" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Switchy necessita della registrazione dello schermo per mostrare anteprime live delle finestre nell’overlay di cambio." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Switchy 需要屏幕录制权限，以在切换浮层中显示窗口的实时预览。" } }
+      }
+    }
+  }
+}

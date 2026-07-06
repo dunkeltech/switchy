@@ -1,0 +1,236 @@
+{
+  "sourceLanguage" : "en",
+  "version" : "1.0",
+  "strings" : {
+    "Settings…" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einstellungen…" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes…" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réglages…" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सेटिंग्स…" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Impostazioni…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置…" } }
+      }
+    },
+    "Quit" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Beenden" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Salir" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Quitter" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बंद करें" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esci" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "退出" } }
+      }
+    },
+    "Permissions required" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Berechtigungen erforderlich" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Permisos necesarios" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Autorisations requises" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अनुमतियाँ आवश्यक हैं" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Autorizzazioni necessarie" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要权限" } }
+      }
+    },
+    "• Accessibility" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "• Bedienungshilfen (Accessibility)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "• Accesibilidad" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "• Accessibilité" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "• एक्सेसिबिलिटी (Accessibility)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "• Accessibilità" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "• 辅助功能（Accessibility）" } }
+      }
+    },
+    "• Screen Recording" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "• Bildschirmaufnahme (Screen Recording)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "• Grabación de pantalla" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "• Enregistrement de l’écran" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "• स्क्रीन रिकॉर्डिंग (Screen Recording)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "• Registrazione dello schermo" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "• 屏幕录制（Screen Recording）" } }
+      }
+    },
+    "Switchy needs the following permissions to switch windows and show previews:\n\n%@\n\nPlease enable them in System Settings and then restart the app." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Switchy benötigt folgende Berechtigungen, um Fenster wechseln und Vorschauen anzeigen zu können:\n\n%@\n\nBitte in den Systemeinstellungen aktivieren und die App anschließend neu starten." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Switchy necesita los siguientes permisos para cambiar de ventana y mostrar vistas previas:\n\n%@\n\nActívalos en Ajustes del Sistema y luego reinicia la app." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Switchy a besoin des autorisations suivantes pour changer de fenêtre et afficher les aperçus :\n\n%@\n\nVeuillez les activer dans Réglages Système, puis redémarrer l’app." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "विंडो बदलने और पूर्वावलोकन दिखाने के लिए Switchy को निम्न अनुमतियों की आवश्यकता है:\n\n%@\n\nकृपया उन्हें सिस्टम सेटिंग्स में सक्षम करें और फिर ऐप को पुनः प्रारंभ करें।" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Switchy necessita delle seguenti autorizzazioni per cambiare finestra e mostrare le anteprime:\n\n%@\n\nAttivale in Impostazioni di Sistema e poi riavvia l’app." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Switchy 需要以下权限才能切换窗口并显示预览：\n\n%@\n\n请在“系统设置”中启用它们，然后重新启动应用。" } }
+      }
+    },
+    "Open Accessibility" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bedienungshilfen öffnen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Accesibilidad" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrir Accessibilité" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "एक्सेसिबिलिटी खोलें" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Apri Accessibilità" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开辅助功能" } }
+      }
+    },
+    "Open Screen Recording" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bildschirmaufnahme öffnen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Grabación de pantalla" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouvrir Enregistrement de l’écran" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्क्रीन रिकॉर्डिंग खोलें" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Apri Registrazione schermo" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开屏幕录制" } }
+      }
+    },
+    "Later" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Später" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Más tarde" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Plus tard" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "बाद में" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Più tardi" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "稍后" } }
+      }
+    },
+    "Switchy – Settings" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Switchy – Einstellungen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Switchy – Ajustes" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Switchy – Réglages" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Switchy – सेटिंग्स" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Switchy – Impostazioni" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Switchy – 设置" } }
+      }
+    },
+    "Not set" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nicht gesetzt" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sin asignar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Non défini" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सेट नहीं" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Non impostato" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未设置" } }
+      }
+    },
+    "Press keys…" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Taste drücken…" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pulsa una tecla…" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Appuyez sur une touche…" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कुंजी दबाएँ…" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Premi un tasto…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按下按键…" } }
+      }
+    },
+    "Minimized" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Minimiert" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Minimizada" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réduit" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मिनिमाइज़" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ridotta a icona" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已最小化" } }
+      }
+    },
+    "Keyboard Shortcuts" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tastaturkurzbefehle" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Atajos de teclado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Raccourcis clavier" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कीबोर्ड शॉर्टकट" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scorciatoie da tastiera" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "键盘快捷键" } }
+      }
+    },
+    "Global switch" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Globaler Wechsel" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cambio global" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Changement global" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "ग्लोबल स्विच" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cambio globale" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "全局切换" } }
+      }
+    },
+    "In-app switch" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "App-interner Wechsel" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cambio dentro de la app" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Changement dans l’app" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "ऐप के भीतर स्विच" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cambio nell’app" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "应用内切换" } }
+      }
+    },
+    "Reverse (during switching)" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Rückwärts (während des Wechsels)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Atrás (durante el cambio)" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Retour (pendant le changement)" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पीछे (बदलते समय)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Indietro (durante il cambio)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "后退（切换时）" } }
+      }
+    },
+    "Hold the modifier and tap the key; releasing confirms. To change, click the field and press the new combination. The reverse key steps the selection back one while the modifier is held (default: left ⇧)." : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Modifikator halten und die Taste tippen; Loslassen bestätigt. Zum Ändern auf das Feld klicken und die neue Kombination drücken. Die Rückwärts-Taste springt bei gehaltenem Modifikator eine Auswahl zurück (Standard: linke ⇧-Taste)." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mantén el modificador y pulsa la tecla; al soltar se confirma. Para cambiarlo, haz clic en el campo y pulsa la nueva combinación. La tecla de retroceso mueve la selección un paso atrás mientras se mantiene el modificador (predeterminado: ⇧ izquierdo)." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Maintenez le modificateur et appuyez sur la touche ; relâcher valide. Pour modifier, cliquez sur le champ et appuyez sur la nouvelle combinaison. La touche de retour recule la sélection d’un cran tant que le modificateur est maintenu (par défaut : ⇧ gauche)." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मॉडिफ़ायर दबाए रखें और कुंजी टैप करें; छोड़ने पर पुष्टि होती है। बदलने के लिए फ़ील्ड पर क्लिक करें और नया संयोजन दबाएँ। मॉडिफ़ायर दबाए रखने पर रिवर्स कुंजी चयन को एक कदम पीछे ले जाती है (डिफ़ॉल्ट: बायाँ ⇧)।" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tieni premuto il modificatore e premi il tasto; il rilascio conferma. Per modificare, fai clic sul campo e premi la nuova combinazione. Il tasto Indietro sposta la selezione indietro di uno mentre il modificatore è premuto (predefinito: ⇧ sinistro)." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按住修饰键并轻点按键；松开即确认。若要更改，点按该字段并按下新的组合键。按住修饰键时，后退键将所选项向后移动一位（默认：左 ⇧）。" } }
+      }
+    },
+    "Window Behavior" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster-Verhalten" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Comportamiento de ventanas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Comportement des fenêtres" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "विंडो व्यवहार" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Comportamento delle finestre" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "窗口行为" } }
+      }
+    },
+    "Include minimized windows" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Minimierte Fenster einbeziehen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Incluir ventanas minimizadas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Inclure les fenêtres réduites" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "मिनिमाइज़ की गई विंडो शामिल करें" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Includi le finestre ridotte a icona" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "包含已最小化的窗口" } }
+      }
+    },
+    "Show windows from all displays/Spaces" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fenster von allen Bildschirmen/Spaces anzeigen" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar ventanas de todas las pantallas/Spaces" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Afficher les fenêtres de tous les écrans/Spaces" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सभी डिस्प्ले/Spaces की विंडो दिखाएँ" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Mostra le finestre di tutti gli schermi/Spaces" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示所有显示器/Spaces 的窗口" } }
+      }
+    },
+    "Startup" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Start" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Inicio" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Démarrage" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "स्टार्टअप" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Avvio" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启动" } }
+      }
+    },
+    "Launch at login" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Bei der Anmeldung starten" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Abrir al iniciar sesión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lancer à l’ouverture de session" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "लॉगिन पर लॉन्च करें" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Avvia all’accesso" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录时启动" } }
+      }
+    }
+  }
+}

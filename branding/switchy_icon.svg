@@ -1,0 +1,62 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3B82F6"/>
+      <stop offset="0.55" stop-color="#5B5BF0"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cardFront" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#EAF0FF"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="22"/>
+      <feOffset dy="16" result="off"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="squircle">
+      <rect x="100" y="92" width="824" height="824" rx="188" ry="188"/>
+    </clipPath>
+    <marker id="arrowhead" markerUnits="userSpaceOnUse" markerWidth="70" markerHeight="70"
+            refX="12" refY="35" orient="auto">
+      <path d="M8 8 L54 35 L8 62 Z" fill="#3B2AA0"/>
+    </marker>
+  </defs>
+
+  <!-- App background (rounded square) with shadow -->
+  <g filter="url(#shadow)">
+    <rect x="100" y="92" width="824" height="824" rx="188" ry="188" fill="url(#bg)"/>
+  </g>
+  <!-- Top gloss -->
+  <rect x="100" y="92" width="824" height="824" rx="188" ry="188" fill="url(#gloss)" clip-path="url(#squircle)"/>
+
+  <!-- Two overlapping window cards -->
+  <g>
+    <!-- back card (translucent) -->
+    <rect x="300" y="330" width="360" height="266" rx="34" ry="34"
+          fill="#ffffff" fill-opacity="0.42"/>
+
+    <!-- front card -->
+    <g>
+      <rect x="372" y="418" width="372" height="278" rx="36" ry="36" fill="url(#cardFront)"/>
+      <!-- title bar -->
+      <path d="M372 454 a36 36 0 0 1 36 -36 h300 a36 36 0 0 1 36 36 v22 h-372 z"
+            fill="#D6E0F5"/>
+      <!-- traffic-light dots -->
+      <circle cx="410" cy="447" r="10" fill="#FF6159"/>
+      <circle cx="444" cy="447" r="10" fill="#FFC02E"/>
+      <circle cx="478" cy="447" r="10" fill="#28C840"/>
+    </g>
+  </g>
+
+  <!-- Cycle arrow (switching): almost-closed circle with an arrowhead -->
+  <path d="M583 481 A86 86 0 1 1 528 476"
+        fill="none" stroke="#3B2AA0" stroke-width="30" stroke-linecap="round"
+        marker-end="url(#arrowhead)"/>
+</svg>
