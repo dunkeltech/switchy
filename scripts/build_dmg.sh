@@ -65,5 +65,22 @@ echo "==> Compressing to $DMG_NAME"
 hdiutil convert "$TMP_DMG" -format UDZO -ov -o "$DMG_PATH" >/dev/null
 rm -f "$TMP_DMG"
 
+# Give the .dmg file itself the app icon. Without this the disk image shows the
+# generic Finder disk-image icon (the volume icon set above only applies once the
+# image is mounted). Must run on the final compressed image, since `hdiutil convert`
+# writes a new file and would drop the resource fork.
+if [ -f "$VOLICON" ]; then
+  echo "==> Setting DMG file icon"
+  ICON_TMP="$(mktemp -d)"
+  cp "$VOLICON" "$ICON_TMP/icon.icns"
+  # sips -i attaches an icon resource to the .icns itself; DeRez extracts it so Rez can
+  # append it to the DMG's resource fork. SetFile then flags the custom icon.
+  sips -i "$ICON_TMP/icon.icns" >/dev/null
+  xcrun DeRez -only icns "$ICON_TMP/icon.icns" > "$ICON_TMP/icon.rsrc"
+  xcrun Rez -append "$ICON_TMP/icon.rsrc" -o "$DMG_PATH"
+  xcrun SetFile -a C "$DMG_PATH"
+  rm -rf "$ICON_TMP"
+fi
+
 echo ""
 echo "Done: $DMG_PATH"

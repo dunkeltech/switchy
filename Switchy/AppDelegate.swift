@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
     private let overlayController = OverlayController()
     private lazy var eventTap = EventTapController(handler: overlayController)
+    private var tapWatchdog: Timer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Agent app: no Dock icon, don't activate as a regular app.
@@ -32,11 +33,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // `CGEventTapCreate` fails.
             self?.eventTap.start()
         }
+
+        startTapWatchdog()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        tapWatchdog?.invalidate()
         eventTap.stop()
         overlayController.stop()
+    }
+
+    /// Keeps the event tap healthy over long uptimes. Two things can silently kill it:
+    /// macOS disabling the tap (slow callback, sleep/wake) and the Accessibility grant
+    /// being dropped (ad-hoc-signed builds lose it when the app is rebuilt/updated).
+    /// Both leave Switchy running but unresponsive to the hotkey until it is restarted.
+    /// Polling here re-enables/recreates the tap automatically – no restart needed.
+    private func startTapWatchdog() {
+        tapWatchdog = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self, !self.eventTap.isRunning else { return }
+                if PermissionsManager.shared.hasAccessibilityPermission(prompt: false) {
+                    self.eventTap.start()
+                }
+            }
+        }
     }
 
     // MARK: - Menu bar

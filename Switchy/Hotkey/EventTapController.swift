@@ -98,12 +98,29 @@ final class EventTapController {
         captureSingleKeyHandler = nil
     }
 
-    /// Whether the tap is running (the recorder can then record via it).
-    var isRunning: Bool { eventTap != nil }
+    /// Whether the tap exists *and* is still enabled by the system (the recorder can
+    /// then record via it).
+    var isRunning: Bool {
+        guard let eventTap else { return false }
+        return CGEvent.tapIsEnabled(tap: eventTap)
+    }
 
-    /// Starts the event tap. Requires the Accessibility permission.
+    /// Ensures the tap is running. Idempotent and self-healing: macOS can silently
+    /// disable a tap (slow callback, long uptime, sleep/wake) without a `tapDisabled…`
+    /// event ever reaching us – the tap then still exists but delivers no events, so
+    /// hotkeys stop working until Switchy is restarted. Here we first try to re-enable
+    /// it and recreate it as a last resort.
+    ///
+    /// Requires the Accessibility permission.
     func start() {
-        guard eventTap == nil else { return }
+        if let existing = eventTap {
+            if CGEvent.tapIsEnabled(tap: existing) { return } // already healthy
+            NSLog("Switchy: event tap was disabled – re-enabling")
+            CGEvent.tapEnable(tap: existing, enable: true)
+            if CGEvent.tapIsEnabled(tap: existing) { return }
+            NSLog("Switchy: re-enabling failed – recreating event tap")
+            stop()
+        }
 
         let mask: CGEventMask =
             (1 << CGEventType.keyDown.rawValue) |

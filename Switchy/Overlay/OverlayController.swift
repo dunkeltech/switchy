@@ -37,6 +37,10 @@ final class OverlayController: HotkeyResponder {
     /// async results of a cancelled session are discarded.
     private var session = 0
 
+    /// Mode of the most recent activation – used to re-open in the same mode when
+    /// recovering from a wedged session (see `hotkeyStep`).
+    private var lastMode: SwitchMode = .global
+
     init() {
         model.onActivate = { [weak self] index in
             self?.selectedIndex = index
@@ -62,7 +66,12 @@ final class OverlayController: HotkeyResponder {
     // MARK: - HotkeyResponder
 
     func hotkeyActivate(mode: SwitchMode, reverse: Bool) {
-        guard !isOverlayActive else { return }
+        lastMode = mode
+        // Recover from a wedged previous session: if we still believe the overlay is
+        // active, tear it down first instead of ignoring the hotkey (which would make
+        // the switcher silently stop appearing until Switchy is restarted).
+        if isOverlayActive { resetSession() }
+
         isOverlayActive = true
         windowsLoaded = false
         pendingConfirm = false
@@ -113,6 +122,17 @@ final class OverlayController: HotkeyResponder {
 
     func hotkeyStep(reverse: Bool) {
         guard isOverlayActive else { return }
+
+        // Recovery: we think a session is active, but the overlay isn't actually on
+        // screen. The previous session got wedged (e.g. a confirm/cancel event was
+        // missed). Re-open fresh so the switcher reappears instead of silently
+        // stepping an invisible overlay – this is what otherwise "needs a restart".
+        if !panel.isVisible {
+            NSLog("Switchy: recovering wedged overlay session (was active but not visible)")
+            hotkeyActivate(mode: lastMode, reverse: reverse)
+            return
+        }
+
         selectedIndex += reverse ? -1 : 1
         if windowsLoaded {
             normalizeSelection()
@@ -136,9 +156,16 @@ final class OverlayController: HotkeyResponder {
 
     func hotkeyCancel() {
         guard isOverlayActive else { return }
+        resetSession()
+    }
+
+    /// Tears down the current session and hides the overlay, invalidating any running
+    /// async task via the session counter. Leaves the app ready for a fresh activation.
+    private func resetSession() {
         isOverlayActive = false
         pendingConfirm = false
-        session += 1 // invalidate running async tasks
+        windowsLoaded = false
+        session += 1
         panel.orderOut(nil)
     }
 

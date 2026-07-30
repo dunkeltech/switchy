@@ -37,33 +37,44 @@ final class WindowEnumerator {
     /// enumeration.
     private let axMessagingTimeout: Float = 0.25
 
+    /// Deadline for the ScreenCaptureKit query. Keeps a wedged SCK connection from
+    /// hanging the whole enumeration (see `enumerateWindows`).
+    private let screenCaptureTimeout: Double = 1.5
+
     /// Returns all switchable windows according to `options`.
     func enumerateWindows(options: EnumerationOptions = EnumerationOptions()) async -> [WindowInfo] {
         let ownPID = getpid()
 
-        // 1) Visible windows via ScreenCaptureKit.
-        let scWindows: [SCWindow]
-        do {
+        // 1) Visible windows via ScreenCaptureKit, guarded by a deadline.
+        //    The ScreenCaptureKit connection can wedge after long uptime (or across
+        //    sleep/wake) and then never return. Without a timeout the whole enumeration
+        //    would hang and the overlay would stay empty until Switchy is restarted.
+        //    On timeout/error we fall back to Accessibility-only enumeration below.
+        let snapshots: [SCWindowSnapshot]? = try? await withTimeout(seconds: screenCaptureTimeout) {
             let content = try await SCShareableContent.current
-            scWindows = content.windows.filter { window in
-                guard window.windowLayer == 0,                // normal app windows
-                      let pid = window.owningApplication?.processID, pid != ownPID,
-                      !(window.title ?? "").isEmpty,
-                      window.frame.width > 40, window.frame.height > 40
-                else { return false }
-                // Windows on other Spaces are "off screen" – only include when requested.
-                if !options.includeOtherSpaces, !window.isOnScreen { return false }
-                if let bundleID = window.owningApplication?.bundleIdentifier,
-                   options.excludedBundleIDs.contains(bundleID) { return false }
-                if let filterPID = options.filterToPID, pid != filterPID { return false }
-                if let rect = options.restrictToCGFrame {
-                    let center = CGPoint(x: window.frame.midX, y: window.frame.midY)
-                    if !rect.contains(center) { return false }
-                }
-                return true
+            return content.windows.compactMap(SCWindowSnapshot.init)
+        }
+        let screenCaptureAvailable = snapshots != nil
+        if !screenCaptureAvailable {
+            NSLog("Switchy: ScreenCaptureKit unavailable/timed out – falling back to Accessibility")
+        }
+
+        let scWindows = (snapshots ?? []).filter { window in
+            guard window.windowLayer == 0,                // normal app windows
+                  window.pid != ownPID,
+                  !window.title.isEmpty,
+                  window.frame.width > 40, window.frame.height > 40
+            else { return false }
+            // Windows on other Spaces are "off screen" – only include when requested.
+            if !options.includeOtherSpaces, !window.isOnScreen { return false }
+            if let bundleID = window.bundleID,
+               options.excludedBundleIDs.contains(bundleID) { return false }
+            if let filterPID = options.filterToPID, window.pid != filterPID { return false }
+            if let rect = options.restrictToCGFrame {
+                let center = CGPoint(x: window.frame.midX, y: window.frame.midY)
+                if !rect.contains(center) { return false }
             }
-        } catch {
-            scWindows = []
+            return true
         }
 
         // 2) Build the AX window index per running app (titles + minimized windows).
@@ -74,16 +85,15 @@ final class WindowEnumerator {
 
         // 3) Merge visible SCK windows with AX elements.
         for window in scWindows {
-            guard let app = window.owningApplication else { continue }
-            let pid = app.processID
-            let axMatch = axIndex[pid]?.match(title: window.title ?? "", frame: window.frame)
+            let pid = window.pid
+            let axMatch = axIndex[pid]?.match(title: window.title, frame: window.frame)
             if let axMatch { matchedAXWindows.insert(AXUIElementBox(axMatch)) }
 
             results.append(
                 WindowInfo(
                     id: window.windowID,
-                    title: window.title ?? "",
-                    appName: app.applicationName,
+                    title: window.title,
+                    appName: window.appName,
                     appIcon: NSRunningApplication(processIdentifier: pid)?.icon,
                     pid: pid,
                     isMinimized: false,
@@ -123,10 +133,12 @@ final class WindowEnumerator {
             }
         }
 
-        // 5) Add visible windows from other Spaces that SCK does not return as
-        //    on-screen windows, via the Accessibility API (only real standard windows
-        //    not already matched to an SCK window).
-        if options.includeOtherSpaces {
+        // 5) Add visible windows that SCK does not return as on-screen windows, via the
+        //    Accessibility API (only real standard windows not already matched to an SCK
+        //    window). This covers other Spaces – and doubles as the fallback when
+        //    ScreenCaptureKit is unavailable, so the switcher keeps listing windows
+        //    (with placeholder previews) instead of showing an empty overlay.
+        if options.includeOtherSpaces || !screenCaptureAvailable {
             for (pid, appWindows) in axIndex {
                 if let filterPID = options.filterToPID, pid != filterPID { continue }
                 for entry in appWindows.visibleWindows {
@@ -216,6 +228,53 @@ private struct AppWindows {
             }
         }
         return best?.element
+    }
+}
+
+/// Minimal, `Sendable` snapshot of an `SCWindow`. Lets the ScreenCaptureKit query run
+/// inside a timeout-guarded child task without passing non-Sendable SCK objects across.
+private struct SCWindowSnapshot {
+    let windowID: CGWindowID
+    let title: String
+    let pid: pid_t
+    let bundleID: String?
+    let appName: String
+    let frame: CGRect
+    let isOnScreen: Bool
+    let windowLayer: Int
+
+    init?(_ window: SCWindow) {
+        guard let app = window.owningApplication else { return nil }
+        windowID = window.windowID
+        title = window.title ?? ""
+        pid = app.processID
+        bundleID = app.bundleIdentifier
+        appName = app.applicationName
+        frame = window.frame
+        isOnScreen = window.isOnScreen
+        windowLayer = window.windowLayer
+    }
+}
+
+/// Thrown when a guarded async operation exceeds its deadline.
+private struct TimeoutError: Error {}
+
+/// Runs `operation` with a deadline, throwing `TimeoutError` if it does not finish in
+/// time. Note: a truly hung operation cannot be force-killed – we simply stop waiting
+/// for it and let the caller fall back.
+private func withTimeout<T: Sendable>(
+    seconds: Double,
+    operation: @escaping @Sendable () async throws -> T
+) async throws -> T {
+    try await withThrowingTaskGroup(of: T.self) { group in
+        group.addTask { try await operation() }
+        group.addTask {
+            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            throw TimeoutError()
+        }
+        defer { group.cancelAll() }
+        guard let result = try await group.next() else { throw TimeoutError() }
+        return result
     }
 }
 
