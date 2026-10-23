@@ -22,6 +22,7 @@ echo "==> Building Release configuration (version $VERSION)"
 # LD/LDPLUSPLUS: in a nix shell LD=ld would otherwise override Xcode's linker driver
 # (see project notes) – reset it explicitly to clang here.
 xcodebuild -project Switchy.xcodeproj -scheme Switchy -configuration Release \
+  -derivedDataPath "$BUILD_DIR/DerivedData" \
   SYMROOT="$BUILD_DIR" LD=clang LDPLUSPLUS=clang++ \
   build
 

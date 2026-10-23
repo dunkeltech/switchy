@@ -31,7 +31,7 @@ struct EnumerationOptions {
 final class WindowEnumerator {
     /// Windows with synthetic IDs (minimized windows without a CGWindowID) start above
     /// this offset to avoid collisions with real CGWindowIDs.
-    private static let syntheticIDBase: CGWindowID = 0xF000_0000
+    static let syntheticIDBase: CGWindowID = 0xF000_0000
 
     /// Guard AX queries with a timeout so a hung process ("beachball") does not block
     /// enumeration.
@@ -39,25 +39,51 @@ final class WindowEnumerator {
 
     /// Deadline for the ScreenCaptureKit query. Keeps a wedged SCK connection from
     /// hanging the whole enumeration (see `enumerateWindows`).
-    private let screenCaptureTimeout: Double = 1.5
+    /// Normal SCK queries return in < 30 ms; 0.4 s is generous while still fast enough
+    /// that the user sees the overlay immediately on fallback.
+    private let screenCaptureTimeout: Double = 0.4
+
+    /// Cooldown duration (seconds) after ScreenCaptureKit fails or times out, during
+    /// which subsequent enumerations skip SCK immediately and go straight to the
+    /// Accessibility fallback instead of waiting for `screenCaptureTimeout` every time.
+    private let screenCaptureCooldown: TimeInterval = 30.0
+
+    /// Timestamp until which ScreenCaptureKit should be skipped (circuit breaker).
+    private var skipScreenCaptureUntil: Date = .distantPast
+
+    /// Resets the ScreenCaptureKit circuit breaker (e.g. after system wake).
+    func resetScreenCaptureAvailability() {
+        skipScreenCaptureUntil = .distantPast
+    }
 
     /// Returns all switchable windows according to `options`.
     func enumerateWindows(options: EnumerationOptions = EnumerationOptions()) async -> [WindowInfo] {
         let ownPID = getpid()
 
-        // 1) Visible windows via ScreenCaptureKit, guarded by a deadline.
+        // 1) Visible windows via ScreenCaptureKit, guarded by a deadline and a
+        //    short circuit-breaker cooldown.
         //    The ScreenCaptureKit connection can wedge after long uptime (or across
         //    sleep/wake) and then never return. Without a timeout the whole enumeration
         //    would hang and the overlay would stay empty until Switchy is restarted.
         //    On timeout/error we fall back to Accessibility-only enumeration below.
-        let snapshots: [SCWindowSnapshot]? = try? await withTimeout(seconds: screenCaptureTimeout) {
-            let content = try await SCShareableContent.current
-            return content.windows.compactMap(SCWindowSnapshot.init)
+        let snapshots: [SCWindowSnapshot]?
+        if Date() < skipScreenCaptureUntil {
+            snapshots = nil
+        } else {
+            let timeout = screenCaptureTimeout
+            let fetched: [SCWindowSnapshot]? = try? await withTimeout(seconds: timeout) {
+                let content = try await SCShareableContent.current
+                return content.windows.compactMap(SCWindowSnapshot.init)
+            }
+            if fetched == nil {
+                skipScreenCaptureUntil = Date().addingTimeInterval(screenCaptureCooldown)
+                NSLog("Switchy: ScreenCaptureKit unavailable/timed out – falling back to Accessibility")
+            } else {
+                skipScreenCaptureUntil = .distantPast
+            }
+            snapshots = fetched
         }
         let screenCaptureAvailable = snapshots != nil
-        if !screenCaptureAvailable {
-            NSLog("Switchy: ScreenCaptureKit unavailable/timed out – falling back to Accessibility")
-        }
 
         let scWindows = (snapshots ?? []).filter { window in
             guard window.windowLayer == 0,                // normal app windows
@@ -262,7 +288,7 @@ private struct TimeoutError: Error {}
 /// Runs `operation` with a deadline, throwing `TimeoutError` if it does not finish in
 /// time. Note: a truly hung operation cannot be force-killed – we simply stop waiting
 /// for it and let the caller fall back.
-private func withTimeout<T: Sendable>(
+func withTimeout<T: Sendable>(
     seconds: Double,
     operation: @escaping @Sendable () async throws -> T
 ) async throws -> T {

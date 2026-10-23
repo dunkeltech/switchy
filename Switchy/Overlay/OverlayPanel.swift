@@ -14,14 +14,20 @@ import SwiftUI
 /// Configured as a `.nonactivatingPanel` so that showing the overlay does not steal
 /// focus from the current app (important for correctly focusing on confirm).
 final class OverlayPanel: NSPanel {
+    /// Minimum height matching `OverlayView`'s fixed frame (`itemHeight + 40 + 44 = 234`),
+    /// preventing the panel from collapsing to 0 px when the model is still empty or
+    /// `NSHostingView` has not laid out yet after a display/sleep transition.
+    private static let minPanelHeight: CGFloat = 234
+
     init(model: OverlayModel) {
         super.init(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 240),
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: Self.minPanelHeight),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
 
+        isReleasedWhenClosed = false
         isFloatingPanel = true
         level = .floating
         backgroundColor = .clear
@@ -47,23 +53,28 @@ final class OverlayPanel: NSPanel {
         guard let screen = screenUnderMouse() else { return }
 
         // Fit the content size to the SwiftUI content, then cap it.
+        contentView?.needsLayout = true
         contentView?.layoutSubtreeIfNeeded()
-        let fitting = contentView?.fittingSize ?? NSSize(width: 400, height: 240)
+        let fitting = contentView?.fittingSize ?? NSSize(width: 400, height: Self.minPanelHeight)
         let maxWidth = screen.visibleFrame.width * 0.8
         let width = min(max(fitting.width, 200), maxWidth)
-        let height = fitting.height
+        let height = max(fitting.height, Self.minPanelHeight)
 
         let visible = screen.visibleFrame
         let origin = NSPoint(
             x: visible.midX - width / 2,
             y: visible.midY - height / 2
         )
+        alphaValue = 1.0
         setFrame(NSRect(origin: origin, size: NSSize(width: width, height: height)), display: true)
         orderFrontRegardless()
+        contentView?.needsDisplay = true
     }
 
     private func screenUnderMouse() -> NSScreen? {
         let mouse = NSEvent.mouseLocation
-        return NSScreen.screens.first { NSMouseInRect(mouse, $0.frame, false) } ?? NSScreen.main
+        return NSScreen.screens.first { NSMouseInRect(mouse, $0.frame, false) }
+            ?? NSScreen.main
+            ?? NSScreen.screens.first
     }
 }

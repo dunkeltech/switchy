@@ -17,6 +17,10 @@ final class PreviewCapture {
     /// Maximum thumbnail edge length (performance/memory).
     private let maxDimension: CGFloat = 640
 
+    /// Deadline for ScreenCaptureKit calls so a wedged SCK daemon cannot stall preview
+    /// loading indefinitely.
+    private let captureTimeout: Double = 0.5
+
     private var cache: [CGWindowID: NSImage] = [:]
 
     /// Discards the cache – call when the overlay is reopened so previews are current.
@@ -26,20 +30,66 @@ final class PreviewCapture {
 
     /// Fills `previewImage` for all given windows (in parallel where possible).
     func loadPreviews(for windows: [WindowInfo]) async -> [WindowInfo] {
-        let content = try? await SCShareableContent.current
-        let scMap: [CGWindowID: SCWindow] = Dictionary(
-            (content?.windows ?? []).map { ($0.windowID, $0) },
-            uniquingKeysWith: { first, _ in first }
-        )
+        // Only query ScreenCaptureKit if there is at least one non-minimized window
+        // with a real CGWindowID (below syntheticIDBase) not yet in cache. When
+        // enumeration already fell back to Accessibility (all IDs >= syntheticIDBase),
+        // skipping SCK here avoids hanging on a wedged ScreenCaptureKit connection and
+        // immediately populates placeholder cards.
+        let needsLiveCapture = windows.contains { window in
+            !window.isMinimized
+                && window.id < WindowEnumerator.syntheticIDBase
+                && cache[window.id] == nil
+        }
 
         var out = windows
+        if !needsLiveCapture {
+            for index in out.indices {
+                let window = out[index]
+                if window.isMinimized {
+                    out[index].previewImage = placeholder(for: window)
+                } else if let cached = cache[window.id] {
+                    out[index].previewImage = cached
+                } else {
+                    out[index].previewImage = placeholder(for: window)
+                }
+            }
+            return out
+        }
+
+        let maxDim = maxDimension
+        let timeout = captureTimeout
+        let uncachedIDs = Set(
+            windows.filter { !$0.isMinimized && $0.id < WindowEnumerator.syntheticIDBase && cache[$0.id] == nil }
+                .map(\.id)
+        )
+
+        let capturedCGImages: [CGWindowID: CGImage] = (try? await withTimeout(seconds: timeout) {
+            let content = try await SCShareableContent.current
+            let scMap: [CGWindowID: SCWindow] = Dictionary(
+                content.windows.map { ($0.windowID, $0) },
+                uniquingKeysWith: { first, _ in first }
+            )
+            var images: [CGWindowID: CGImage] = [:]
+            for windowID in uncachedIDs {
+                guard let scWindow = scMap[windowID] else { continue }
+                if let cgImage = await Self.captureCGImage(scWindow, maxDimension: maxDim) {
+                    images[windowID] = cgImage
+                }
+            }
+            return images
+        }) ?? [:]
+
         for index in out.indices {
             let window = out[index]
             if window.isMinimized {
                 out[index].previewImage = placeholder(for: window)
             } else if let cached = cache[window.id] {
                 out[index].previewImage = cached
-            } else if let scWindow = scMap[window.id], let image = await capture(scWindow) {
+            } else if let cgImage = capturedCGImages[window.id] {
+                let image = NSImage(
+                    cgImage: cgImage,
+                    size: NSSize(width: cgImage.width, height: cgImage.height)
+                )
                 cache[window.id] = image
                 out[index].previewImage = image
             } else {
@@ -51,7 +101,7 @@ final class PreviewCapture {
 
     // MARK: - Capturing
 
-    private func capture(_ window: SCWindow) async -> NSImage? {
+    private static func captureCGImage(_ window: SCWindow, maxDimension: CGFloat) async -> CGImage? {
         let filter = SCContentFilter(desktopIndependentWindow: window)
 
         let config = SCStreamConfiguration()
@@ -61,18 +111,10 @@ final class PreviewCapture {
         config.showsCursor = false
         config.ignoreShadowsSingleWindow = true
 
-        do {
-            let cgImage = try await SCScreenshotManager.captureImage(
-                contentFilter: filter,
-                configuration: config
-            )
-            return NSImage(
-                cgImage: cgImage,
-                size: NSSize(width: cgImage.width, height: cgImage.height)
-            )
-        } catch {
-            return nil
-        }
+        return try? await SCScreenshotManager.captureImage(
+            contentFilter: filter,
+            configuration: config
+        )
     }
 
     // MARK: - Placeholder

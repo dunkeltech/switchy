@@ -17,7 +17,9 @@ final class OverlayController: HotkeyResponder {
     private let previewCapture = PreviewCapture()
     private let mru = MRUTracker()
 
-    private lazy var panel = OverlayPanel(model: model)
+    private var panel: OverlayPanel?
+    private var panelNeedsRecreation = false
+    private var systemObservers: [NSObjectProtocol] = []
 
     /// Windows in current display order.
     private var windows: [WindowInfo] = []
@@ -57,10 +59,88 @@ final class OverlayController: HotkeyResponder {
 
     func start() {
         mru.start()
+        registerSystemObservers()
     }
 
     func stop() {
         mru.stop()
+        unregisterSystemObservers()
+        destroyPanel()
+    }
+
+    /// Listens for system sleep/wake, display sleep/wake, and screen configuration
+    /// changes so the overlay panel and ScreenCaptureKit state are refreshed cleanly.
+    private func registerSystemObservers() {
+        unregisterSystemObservers()
+
+        let wsCenter = NSWorkspace.shared.notificationCenter
+        let wakeNotifications: [Notification.Name] = [
+            NSWorkspace.didWakeNotification,
+            NSWorkspace.screensDidWakeNotification,
+            NSWorkspace.activeSpaceDidChangeNotification,
+        ]
+        for name in wakeNotifications {
+            let token = wsCenter.addObserver(forName: name, object: nil, queue: .main) { [weak self] note in
+                MainActor.assumeIsolated {
+                    guard let self else { return }
+                    if note.name != NSWorkspace.activeSpaceDidChangeNotification {
+                        self.enumerator.resetScreenCaptureAvailability()
+                        self.panelNeedsRecreation = true
+                        if self.isOverlayActive {
+                            self.resetSession()
+                        }
+                    } else if !self.isOverlayActive {
+                        // Mark for fresh creation on next invocation after a Space switch.
+                        self.panelNeedsRecreation = true
+                    }
+                }
+            }
+            systemObservers.append(token)
+        }
+
+        let screenToken = NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard let self else { return }
+                self.panelNeedsRecreation = true
+            }
+        }
+        systemObservers.append(screenToken)
+    }
+
+    private func unregisterSystemObservers() {
+        let wsCenter = NSWorkspace.shared.notificationCenter
+        for token in systemObservers {
+            wsCenter.removeObserver(token)
+            NotificationCenter.default.removeObserver(token)
+        }
+        systemObservers.removeAll()
+    }
+
+    /// Returns the active `OverlayPanel`, recreating it if none exists or if a sleep/wake,
+    /// display reconfiguration, or Space transition invalidated the previous window surface.
+    private func ensureFreshPanel() -> OverlayPanel {
+        if panelNeedsRecreation || panel == nil {
+            destroyPanel()
+            panelNeedsRecreation = false
+        }
+        if let existing = panel {
+            return existing
+        }
+        let created = OverlayPanel(model: model)
+        panel = created
+        return created
+    }
+
+    private func destroyPanel() {
+        if let existing = panel {
+            existing.orderOut(nil)
+            existing.close()
+            panel = nil
+        }
     }
 
     // MARK: - HotkeyResponder
@@ -86,7 +166,8 @@ final class OverlayController: HotkeyResponder {
         let options = enumerationOptions(for: mode)
 
         previewCapture.invalidate()
-        panel.showCentered()
+        let activePanel = ensureFreshPanel()
+        activePanel.showCentered()
 
         Task { [weak self] in
             guard let self else { return }
@@ -110,7 +191,7 @@ final class OverlayController: HotkeyResponder {
                 return
             }
 
-            self.panel.showCentered() // re-fit (width depends on the count)
+            self.panel?.showCentered() // re-fit (width depends on the count)
 
             // Load previews (can take a moment) and update the view.
             result = await self.previewCapture.loadPreviews(for: result)
@@ -127,8 +208,9 @@ final class OverlayController: HotkeyResponder {
         // screen. The previous session got wedged (e.g. a confirm/cancel event was
         // missed). Re-open fresh so the switcher reappears instead of silently
         // stepping an invisible overlay – this is what otherwise "needs a restart".
-        if !panel.isVisible {
+        if panel == nil || panel?.isVisible != true {
             NSLog("Switchy: recovering wedged overlay session (was active but not visible)")
+            panelNeedsRecreation = true
             hotkeyActivate(mode: lastMode, reverse: reverse)
             return
         }
@@ -147,7 +229,7 @@ final class OverlayController: HotkeyResponder {
         // enumeration task performs the switch afterwards.
         guard windowsLoaded else {
             pendingConfirm = true
-            panel.orderOut(nil)
+            panel?.orderOut(nil)
             return
         }
 
@@ -166,7 +248,7 @@ final class OverlayController: HotkeyResponder {
         pendingConfirm = false
         windowsLoaded = false
         session += 1
-        panel.orderOut(nil)
+        panel?.orderOut(nil)
     }
 
     /// Performs the actual window switch and ends the session.
@@ -175,7 +257,7 @@ final class OverlayController: HotkeyResponder {
         isOverlayActive = false
         pendingConfirm = false
         session += 1
-        panel.orderOut(nil)
+        panel?.orderOut(nil)
 
         if windows.indices.contains(selectedIndex) {
             WindowActivator.activate(windows[selectedIndex])
@@ -213,7 +295,8 @@ final class OverlayController: HotkeyResponder {
     private static func cgFrameOfScreenUnderMouse() -> CGRect? {
         let mouse = NSEvent.mouseLocation
         guard let screen = NSScreen.screens.first(where: { NSMouseInRect(mouse, $0.frame, false) })
-            ?? NSScreen.main,
+            ?? NSScreen.main
+            ?? NSScreen.screens.first,
               let primary = NSScreen.screens.first
         else { return nil }
 
