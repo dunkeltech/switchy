@@ -29,6 +29,8 @@ protocol HotkeyResponder: AnyObject {
     func hotkeyActivate(mode: SwitchMode, reverse: Bool)
     /// Further navigation while the modifier is held.
     func hotkeyStep(reverse: Bool)
+    /// Row navigation in a multi-row grid (down = next row, up = previous row).
+    func hotkeyStepRow(down: Bool)
     /// Modifier released → confirm the selection.
     func hotkeyConfirm()
     /// `Esc` → cancel without switching.
@@ -236,6 +238,26 @@ final class EventTapController {
                     ?? Self.match(flags: flags, keycode: keycode, combo: settings.appFilterHotkey) {
                     responder.hotkeyStep(reverse: reverse)
                     return true
+                }
+                // Arrow keys for multi-row navigation.
+                switch keycode {
+                case 123: // Left arrow
+                    responder.hotkeyStep(reverse: true)
+                    return true
+                case 124: // Right arrow
+                    responder.hotkeyStep(reverse: false)
+                    return true
+                case 126: // Up arrow
+                    responder.hotkeyStepRow(down: false)
+                    return true
+                case 125: // Down arrow
+                    responder.hotkeyStepRow(down: true)
+                    return true
+                case 36, 76: // Return, Enter
+                    responder.hotkeyConfirm()
+                    return true
+                default:
+                    break
                 }
                 if keycode == keyEscape {
                     responder.hotkeyCancel()

@@ -222,6 +222,41 @@ final class OverlayController: HotkeyResponder {
         }
     }
 
+    func hotkeyStepRow(down: Bool) {
+        guard isOverlayActive else { return }
+
+        if panel == nil || panel?.isVisible != true {
+            NSLog("Switchy: recovering wedged overlay session (was active but not visible)")
+            panelNeedsRecreation = true
+            hotkeyActivate(mode: lastMode, reverse: false)
+            return
+        }
+
+        guard windowsLoaded, !windows.isEmpty else { return }
+
+        let count = windows.count
+        let columns = max(1, model.columns)
+        let rows = max(1, Int(ceil(Double(count) / Double(columns))))
+
+        let currentRow = selectedIndex / columns
+        let currentCol = selectedIndex % columns
+
+        let targetRow: Int
+        if down {
+            targetRow = (currentRow + 1) % rows
+        } else {
+            targetRow = (currentRow - 1 + rows) % rows
+        }
+
+        var targetIndex = targetRow * columns + currentCol
+        if targetIndex >= count {
+            targetIndex = count - 1
+        }
+
+        selectedIndex = targetIndex
+        model.selectedIndex = selectedIndex
+    }
+
     func hotkeyConfirm() {
         guard isOverlayActive else { return }
 

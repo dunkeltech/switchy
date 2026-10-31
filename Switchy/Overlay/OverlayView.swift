@@ -13,6 +13,7 @@ import SwiftUI
 final class OverlayModel: ObservableObject {
     @Published var windows: [WindowInfo] = []
     @Published var selectedIndex: Int = 0
+    @Published var columns: Int = 1
 
     /// Called when an item is clicked (index).
     var onActivate: (Int) -> Void = { _ in }
@@ -20,28 +21,44 @@ final class OverlayModel: ObservableObject {
     var onHover: (Int) -> Void = { _ in }
 }
 
-/// The horizontal preview bar. Shows a preview, the app icon and the (truncated)
-/// title for each window.
+/// The preview grid overlay. Shows previews, app icons and (truncated)
+/// titles for each window in one or more rows.
 struct OverlayView: View {
     @ObservedObject var model: OverlayModel
 
     private let itemWidth: CGFloat = 220
     private let itemHeight: CGFloat = 150
 
+    private var rows: [[(index: Int, window: WindowInfo)]] {
+        let cols = max(1, model.columns)
+        let enumerated = Array(model.windows.enumerated())
+        var result: [[(index: Int, window: WindowInfo)]] = []
+        for i in stride(from: 0, to: enumerated.count, by: cols) {
+            let chunk = Array(enumerated[i ..< min(i + cols, enumerated.count)])
+            result.append(chunk.map { (index: $0.offset, window: $0.element) })
+        }
+        return result
+    }
+
     var body: some View {
         ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(Array(model.windows.enumerated()), id: \.element.id) { index, window in
-                        item(for: window, isSelected: index == model.selectedIndex)
-                            .id(index)
-                            .onTapGesture { model.onActivate(index) }
-                            .onHover { hovering in
-                                if hovering { model.onHover(index) }
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                        HStack(spacing: 12) {
+                            ForEach(row, id: \.window.id) { element in
+                                item(for: element.window, isSelected: element.index == model.selectedIndex)
+                                    .id(element.index)
+                                    .onTapGesture { model.onActivate(element.index) }
+                                    .onHover { hovering in
+                                        if hovering { model.onHover(element.index) }
+                                    }
                             }
+                        }
                     }
                 }
                 .padding(20)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
             .onChange(of: model.selectedIndex) { _, newValue in
                 withAnimation(.easeOut(duration: 0.12)) {
@@ -49,7 +66,7 @@ struct OverlayView: View {
                 }
             }
         }
-        .frame(height: itemHeight + 40 + 44)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(VisualEffectBackground())
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
